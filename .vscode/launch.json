@@ -1,0 +1,45 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug Raycaster",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/raycaster",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Set Disassembly Flavor to Intel",
+					"text": "-gdb-set disassembly-flavor intel",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Catch floating point exceptions",
+					"text": "handle SIGFPE stop print nopass",
+					"ignoreFailures": false
+				}
+			],
+			"preLaunchTask": "build",
+			"miDebuggerPath": "/usr/bin/gdb",
+			"logging": {
+				"moduleLoad": false,
+				"trace": false,
+				"engineLogging": false,
+				"programOutput": true,
+				"exceptions": true
+			},
+			"sourceFileMap": {},
+			"additionalSOLibSearchPath": ""
+		}
+	]
+}

@@ -1,0 +1,45 @@
+# minilibx.supp
+{
+	MinilibX_malloc
+	Memcheck:Leak
+	...
+	fun:malloc
+	...
+	obj:*/libmlx.a
+}
+
+{
+	MinilibX_calloc
+	Memcheck:Leak
+	...
+	fun:calloc
+	...
+	obj:*/libmlx.a
+}
+
+{
+	MinilibX_X11
+	Memcheck:Leak
+	...
+	fun:malloc
+	...
+	obj:*/libX11.so*
+}
+
+{
+	MinilibX_Xext
+	Memcheck:Leak
+	...
+	fun:malloc
+	...
+	obj:*/libXext.so*
+}
+
+{
+	MinilibX_general
+	Memcheck:Leak
+	...
+	fun:*
+	...
+	fun:mlx_*
+}

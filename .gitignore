@@ -1,0 +1,15 @@
+# Exclude external dependencies/subprojects
+minilibx-linux/
+mpa_check/
+
+# Exclude object files
+*.o
+
+# Exclude executables
+a.out
+raycaster
+
+# Exclude temporary files
+old_time
+time
+outfile.txt
