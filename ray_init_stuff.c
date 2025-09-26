@@ -6,23 +6,22 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:01:42 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/25 19:53:46 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/26 20:17:32 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycaster.h"
 
-void	init_ray_image(t_mlx_data *data)
+void	init_image(t_mlx_data *data)
 {
-	data->ray_image = mlx_new_image(data->mlx_pointer, data->window_width, data->window_height);
-	data->ray_data = mlx_get_data_addr(data->ray_image, &data->ray_bits_per_pixel,
-										&data->ray_line_length, &data->ray_endian);
+	data->img.mlx_img = mlx_new_image(data->mlx_pointer, data->window_width, data->window_height);
+	data->img.addr = mlx_get_data_addr(data->img.mlx_img, &data->img.bpp, &data->img.line_len, &data->img.endian);
 }
 
 void	init_textures(t_mlx_data *data)
 {
 
-		size_t		i;
+	size_t		i;
 	const char	*textures_path[] = {P_FLOOR, P_WALL, P_EP, P_SP, P_WP, P_NP, P_EXTRA};
 
 	i = 0;
@@ -50,7 +49,7 @@ static void	init_map(t_map *map)
 	char temp_map[8][8] = {
 		{'1','1','1','1','1','1','1','1'},
 		{'1','0','1','0','0','0','0','1'},
-		{'1','0','0','0','0','0','0','1'},
+		{'1','0','1','0','1','1','1','1'},
 		{'1','0','1','0','W','0','0','1'},
 		{'1','0','0','0','0','0','0','1'},
 		{'1','1','0','C','0','1','0','1'},
@@ -136,6 +135,16 @@ void	init_player(t_player_data *player, t_mlx_data *data)
 
 	player->rotSpeed = 0;
 	player->moveSpeed = 0;
+
+	player->kbrd.key_w = false;
+	player->kbrd.key_s = false;
+	player->kbrd.key_a = false;
+	player->kbrd.key_d = false;
+	player->kbrd.key_left = false;
+	player->kbrd.key_right = false;
+	player->kbrd.key_m = true;
+
+
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:10:58 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/25 19:57:58 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/26 20:39:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,17 @@
 # include <stdlib.h>
 # include <float.h>
 # include <sys/time.h>
+# include <X11/X.h>
+# include <X11/keysym.h>
 
 # define TILE_SIZE 64
 # define PLAYER_SIZE 8
+
+#define WNDW_W 1920
+#define WNDW_H 1080
+
+# define WHT_PXL 0xFFFFFF
+# define RED_PXL 0xdb4437
 
 # define P_FLOOR "textures/green_texture.xpm"
 # define P_WALL "textures/red_texture.xpm"
@@ -52,6 +60,28 @@ typedef struct s_map
 	size_t		cols;
 }				t_map;
 
+typedef struct	s_img
+{
+	void		*mlx_img;
+	char		*addr;
+	int			bpp; /* bits per pixel */
+	int			line_len;
+	int			endian;
+}				t_img;
+
+typedef struct s_key_inpt
+{
+	bool		key_w;
+	bool		key_s;
+	bool		key_a;
+	bool		key_d;
+	bool		key_left;
+	bool		key_right;
+	bool		key_m;
+
+}				t_key_inpt;
+
+
 typedef struct s_mlx_data
 {
 	void		*mlx_pointer;
@@ -66,19 +96,19 @@ typedef struct s_mlx_data
 	t_map		map;
 	bool		display_map;
 
-	void	*ray_image;
-	char	*ray_data;
-	int		ray_bits_per_pixel;
-	int		ray_line_length;
-	int		ray_endian;
+
+	t_img		img;
+	// void		*ray_image; 		// en gros ce bloc a ete bouge dans t_img
+	// char		*ray_data;
+	// int		ray_bits_per_pixel;
+	// int		ray_line_length;
+	// int		ray_endian;
 
 	// t_elements	*elts;
 }			t_mlx_data;
 
-typedef struct s_ray_data
-{
 
-}			t_ray_data;
+
 
 typedef struct s_player_data
 {
@@ -112,23 +142,33 @@ typedef struct s_player_data
 	double		moveSpeed;
 	double		rotSpeed;
 
+	t_key_inpt	kbrd;
+
 
 	t_mlx_data	*mlx_data_pointer;
 
 }			t_player_data;
+
+typedef struct s_sqr
+{
+	int			x;
+	int			y;
+	int			side;
+	int			color;
+}				t_sqr;
 
 
 // init_stuff
 void		init_textures(t_mlx_data *data);
 void		init_data(t_mlx_data *data);
 void		init_player(t_player_data *player, t_mlx_data *data);
-void		init_ray_image(t_mlx_data *data);
+void		init_image(t_mlx_data *data);
 
 
 
 // mlx_stuff
 int			close_window(t_mlx_data *data);
-void		clear_ray_image(t_mlx_data *data);
+// void		clear_ray_image(t_mlx_data *data);
 
 
 // render_stuff
@@ -138,13 +178,19 @@ bool		render(t_mlx_data *data, t_player_data *player);
 // game_stuff
 int			key_hook(int keycode, t_player_data *player);
 void		toggle_minimap(t_mlx_data *data, t_player_data *player);
+int			key_press_hook(int keysym, t_player_data *data);
+int			key_release_hook(int keysym, t_player_data *player);
+void		handle_move(t_player_data *player);
+
+
+
 
 
 // utils
 t_tile		char_to_tile(char c);
 void		print_map(t_map *map);
 double		date_in_s(void);
-double	date_in_ms(void);
+double		date_in_ms(void);
 
 
 
