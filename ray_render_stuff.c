@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:13:25 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/26 20:38:18 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/27 19:04:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,64 +39,6 @@
 // }
 
 
-void	img_pix_put(t_img *img, int x, int y, int color)
-{
-	char	*pixel;
-	int		i;
-
-	i = img->bpp - 8;
-	pixel = img->addr + (y * img->line_len + x * (img->bpp / 8));
-	while (i >= 0)
-	{
-		/* big endian, MSB is the leftmost bit */
-		if (img->endian != 0)
-			*pixel++ = (color >> i) & 0xFF;
-		/* little endian, LSB is the leftmost bit */
-		else
-			*pixel++ = (color >> (img->bpp - 8 - i)) & 0xFF;
-		i -= 8;
-	}
-}
-
-int render_empty_sqr(t_img *img, t_sqr sqr)
-{
-	int	i;
-	int j;
-
-	i = sqr.y;
-	while (i < sqr.y + sqr.side)
-	{
-		j = sqr.x;
-		while (j < sqr.x + sqr.side)
-		{
-			// Only draw pixels on the border (edges)
-			if (i == sqr.y || i == sqr.y + sqr.side - 1 ||
-				j == sqr.x || j == sqr.x + sqr.side - 1)
-				img_pix_put(img, j, i, sqr.color);
-			j++;
-		}
-		i++;
-	}
-	return (0);
-}
-
-
-int render_sqr(t_img *img, t_sqr sqr)
-{
-	int	i;
-	int j;
-
-	i = sqr.y;
-	while (i < sqr.y + sqr.side)
-	{
-		j = sqr.x;
-		while (j < sqr.x + sqr.side)
-				img_pix_put(img, j++, i, sqr.color);
-		++i;
-	}
-	return (0);
-}
-
 
 
 void draw_ray_line(t_mlx_data *data, int x0, int y0, int x1, int y1) // a expliciter
@@ -112,9 +54,9 @@ void draw_ray_line(t_mlx_data *data, int x0, int y0, int x1, int y1) // a explic
 	{
 		if (x >= 0 && x <= data->window_width && y>= 0 && y<= data->window_height)
 		{
-			int offset = (y * data->img.line_len) + (x * (data->img.bpp / 8));
+			int offset = (y * data->map_img.line_len) + (x * (data->map_img.bpp / 8));
 			// Yellow color (0xFFFF00) in the image buffer
-			*(unsigned int*)(data->img.addr + offset) = 0xFFFF00;		}
+			*(unsigned int*)(data->map_img.addr + offset) = 0xFFFF00;		}
 		// if (data->mlx_window)
 		// 	mlx_pixel_put(data->mlx_pointer, data->mlx_window, x, y, 0xFFFF00);
 
@@ -163,6 +105,25 @@ void	render_2Dray(t_mlx_data *data, t_player_data *player) // a expliciter
 		startX * TILE_SIZE, startY * TILE_SIZE,
 		wallHitX * TILE_SIZE, wallHitY * TILE_SIZE);
 }
+
+// void	render_cubes(t_mlx_data *data, t_player_data *player)
+// {
+
+// 	int	lineHeight = (int)(WNDW_H / player->perpWallDist);
+
+// 	int	drawStart = -lineHeight / 2 + WNDW_H / 2;
+// 	if (drawStart < 0)
+// 		drawStart = 0;
+// 	int drawEnd = lineHeight / 2 + WNDW_H / 2;
+// 	if (drawEnd >= WNDW_H)
+// 		drawEnd = WNDW_H - 1;
+
+
+
+
+
+
+// }
 
 
 void	raycasting_loop(t_mlx_data *data, t_player_data *player)
@@ -247,6 +208,14 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 		}
 		if (player->kbrd.key_m == true)
 			render_2Dray(player->mlx_data_pointer, player);
+
+		if (player->side == 0)
+			player->perpWallDist = player->sideDistX - player->deltaDistX;
+		else
+			player->perpWallDist = player->sideDistY - player->deltaDistY;
+		// render_cubes(player->mlx_data_pointer, player);
+
+
 	}
 }
 
@@ -260,15 +229,44 @@ void	render_map(t_mlx_data *data, t_player_data *player)
 		for (x = 0; x < 8; x++)
 		{
 			if (char_to_tile(data->map.grid[y][x]) == E_WALL)
-				render_sqr(&data->img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, RED_PXL});
+				render_sqr(&data->map_img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, RGB_RED});
 
 			else
-				render_sqr(&data->img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, 0x000000});			// render_tile(data, char_to_tile(data->map.grid[y][x]), x, y);
+				render_sqr(&data->map_img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, 0x000000});			// render_tile(data, char_to_tile(data->map.grid[y][x]), x, y);
 		}
 	}
 
 	// raycasting_loop(data, player);
 }
+
+void	render_background(t_mlx_data *data, t_player_data *player)
+{
+	(void) player;
+	render_rect(&data->background_img, (t_rect){0, 0, WNDW_W, (WNDW_H / 2), RGB_CLG});
+	render_rect(&data->background_img, (t_rect){0, WNDW_H / 2, WNDW_W, (WNDW_H / 2), RGB_FLR});
+
+
+
+
+}
+
+// void	render_background(t_img *background_img, int color)
+// {
+// 	int	i;
+// 	int	j;
+
+// 	i = 0;
+// 	while (i < WNDW_H)
+// 	{
+// 		j = 0;
+// 		while (j < WNDW_W)
+// 		{
+// 			img_pix_put(background_img, j++, i, color);
+// 		}
+// 		++i;
+// 	}
+// }
+
 
 int	render_loop(t_player_data *player)
 {
@@ -288,7 +286,6 @@ int	render_loop(t_player_data *player)
 	player->moveSpeed = player->frameTime * 5.0;
 	player->rotSpeed  = player->frameTime * 3.0;
 
-
 	handle_move(player);
 	// clear_image(player->mlx_data_pointer);
 	mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
@@ -296,19 +293,31 @@ int	render_loop(t_player_data *player)
 	// for (y = 0; y < 8; y++)
 	// {
 	// 	for (x = 0; x < 8; x++)
-	// 	{
+	// 	`{
 	// 		render_tile(player->mlx_data_pointer, char_to_tile(player->mlx_data_pointer->map.grid[y][x]), x, y);
 	// 	}
 	// }
+
+	// render_background(player->mlx_data_pointer, player);
+	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+	// 		player->mlx_data_pointer->background_img.mlx_img, 0, 0);
+	mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+		player->mlx_data_pointer->bckgr_txtr[1], 0, 0);
+	mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+		player->mlx_data_pointer->bckgr_txtr[0], 0, WNDW_H / 2);
 
 	if (player->kbrd.key_m == true)
 		render_map(player->mlx_data_pointer, player);
 
 	raycasting_loop(player->mlx_data_pointer, player);
 
+
+
+
+
 	if (player->kbrd.key_m == true)
-		mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
-			player->mlx_data_pointer->img.mlx_img, 0, 0);
+		{mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+			player->mlx_data_pointer->map_img.mlx_img, 10, 10);}
 
 
 	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
@@ -325,16 +334,19 @@ bool	render(t_mlx_data *data, t_player_data *player)
 		return (printf("MLX initialization failed\n"), false);
 
 
-	data->mlx_window = mlx_new_window(data->mlx_pointer, data->window_width,
-			data->window_height, "raycaster");
+	data->mlx_window = mlx_new_window(data->mlx_pointer, WNDW_W,
+			WNDW_H, "raycaster");
 	if (!data->mlx_window)
 	{
 		mlx_destroy_display(data->mlx_pointer);
 		free(data->mlx_pointer);
 		return (printf("Window creation failed\n"), false);
 	}
-	// init_textures(data);
-	init_image(data);
+	init_textures(data);
+
+	init_images(data);
+	// render_background(player->mlx_data_pointer, player);
+
 
 	mlx_loop_hook(data->mlx_pointer, render_loop, player);
 	mlx_hook(data->mlx_window, KeyPress, KeyPressMask, key_press_hook, player);

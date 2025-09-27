@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:10:58 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/26 20:39:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/27 18:56:30 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,16 @@
 # define TILE_SIZE 64
 # define PLAYER_SIZE 8
 
-#define WNDW_W 1920
-#define WNDW_H 1080
+# define WNDW_W 1920
+# define WNDW_H 1080
 
-# define WHT_PXL 0xFFFFFF
-# define RED_PXL 0xdb4437
+# define RGB_WHT 0xFFFFFF
+# define RGB_RED 0xdb4437
+# define RGB_BLUE 0x4285f4
+# define RGB_YLW 0xf4b400
+# define RGB_GRN 0x0f9d58
+# define RGB_FLR 0x7A8B92
+# define RGB_CLG 0x927A8B
 
 # define P_FLOOR "textures/green_texture.xpm"
 # define P_WALL "textures/red_texture.xpm"
@@ -41,6 +46,9 @@
 # define P_WP "textures/yellowW_texture.xpm"
 # define P_NP "textures/yellowN_texture.xpm"
 # define P_EXTRA "textures/blue_texture.xpm"
+# define P_GRASS "textures/floor_texture.xpm"
+# define P_SKY "textures/sky_texture.xpm"
+
 
 typedef enum	e_tile
 {
@@ -88,6 +96,7 @@ typedef struct s_mlx_data
 	void		*mlx_window;
 	// void		*mlx_minimap;
 	void		*textures[7];
+	void		*bckgr_txtr[2];
 	int			img_height;
 	int			img_width;
 	int			window_height;
@@ -97,7 +106,10 @@ typedef struct s_mlx_data
 	bool		display_map;
 
 
-	t_img		img;
+	t_img		map_img;
+	t_img		background_img;
+	t_img		game_img;
+
 	// void		*ray_image; 		// en gros ce bloc a ete bouge dans t_img
 	// char		*ray_data;
 	// int		ray_bits_per_pixel;
@@ -157,12 +169,21 @@ typedef struct s_sqr
 	int			color;
 }				t_sqr;
 
+typedef struct s_rect
+{
+	int			x;
+	int			y;
+	int			width;
+	int			height;
+	int			color;
+}				t_rect;
+
 
 // init_stuff
 void		init_textures(t_mlx_data *data);
 void		init_data(t_mlx_data *data);
 void		init_player(t_player_data *player, t_mlx_data *data);
-void		init_image(t_mlx_data *data);
+void		init_images(t_mlx_data *data);
 
 
 
@@ -191,6 +212,13 @@ t_tile		char_to_tile(char c);
 void		print_map(t_map *map);
 double		date_in_s(void);
 double		date_in_ms(void);
+
+// render utils
+void		img_pix_put(t_img *img, int x, int y, int color);
+int			render_empty_sqr(t_img *img, t_sqr sqr);
+int			render_sqr(t_img *img, t_sqr sqr);
+int			render_rect(t_img *img, t_rect rect);
+
 
 
 

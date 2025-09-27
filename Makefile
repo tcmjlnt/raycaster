@@ -10,6 +10,7 @@ SRCS = raycaster.c \
 		ray_render_stuff.c \
 		ray_utils.c \
 		ray_game_mechanics.c \
+		ray_render_utils.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)

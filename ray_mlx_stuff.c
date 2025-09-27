@@ -6,18 +6,29 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:10:50 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/26 18:05:52 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/27 19:00:57 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycaster.h"
 
+static void	destroy_images(t_mlx_data *data)
+{
+		mlx_destroy_image(data->mlx_pointer, data->map_img.mlx_img);
+		mlx_destroy_image(data->mlx_pointer, data->background_img.mlx_img);
+		mlx_destroy_image(data->mlx_pointer, data->game_img.mlx_img);
+
+}
+
 int	close_window(t_mlx_data *data)
 {
-	// for (int i = 0; i < 7; i++)
-	// 	mlx_destroy_image(data->mlx_pointer, data->textures[i]);
+	for (int i = 0; i < 7; i++)
+		mlx_destroy_image(data->mlx_pointer, data->textures[i]);
+	mlx_destroy_image(data->mlx_pointer, data->bckgr_txtr[0]);
+	mlx_destroy_image(data->mlx_pointer, data->bckgr_txtr[1]);
+
 	// mlx_destroy_image(data->mlx_pointer, data->ray_image);
-	mlx_destroy_image(data->mlx_pointer, data->img.mlx_img);
+	destroy_images(data);
 	mlx_destroy_window(data->mlx_pointer, data->mlx_window);
 	mlx_destroy_display(data->mlx_pointer);
 	free(data->mlx_pointer);

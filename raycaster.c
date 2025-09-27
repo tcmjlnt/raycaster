@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:11:46 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/26 20:35:04 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/27 15:51:39 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,21 +134,21 @@ int	key_press_hook(int keysym, t_player_data *player)
 {
 	if (keysym == XK_Escape)
 		close_window(player->mlx_data_pointer);
-	if (keysym == XK_m)
-	{
-		if (player->kbrd.key_m == false)
-		{
-			player->kbrd.key_m = true;
-			printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
-		}
-		else
-		{
-			player->kbrd.key_m = false;
-			printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
-			mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
-		}
-		// toggle_minimap(player->mlx_data_pointer, player);
-	}
+	// if (keysym == XK_m)
+	// {
+	// 	if (player->kbrd.key_m == false)
+	// 	{
+	// 		player->kbrd.key_m = true;
+	// 		printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
+	// 	}
+	// 	else
+	// 	{
+	// 		player->kbrd.key_m = false;
+	// 		printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
+	// 		mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
+	// 	}
+	// 	// toggle_minimap(player->mlx_data_pointer, player);
+	// }
 	if (keysym == XK_w)
 		player->kbrd.key_w = true;
 	if (keysym == XK_s)
@@ -166,6 +166,22 @@ int	key_press_hook(int keysym, t_player_data *player)
 
 int	key_release_hook(int keysym, t_player_data *player)
 {
+
+	if (keysym == XK_m)
+	{
+		if (player->kbrd.key_m == false)
+		{
+			player->kbrd.key_m = true;
+			printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
+		}
+		else
+		{
+			player->kbrd.key_m = false;
+			printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
+			mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
+		}
+		// toggle_minimap(player->mlx_data_pointer, player);
+	}
 	if (keysym == XK_w)
 		player->kbrd.key_w = false;
 	if (keysym == XK_s)

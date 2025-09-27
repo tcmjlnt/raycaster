@@ -6,23 +6,50 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:01:42 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/26 20:17:32 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/27 19:01:39 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycaster.h"
 
-void	init_image(t_mlx_data *data)
+void	init_images(t_mlx_data *data)
 {
-	data->img.mlx_img = mlx_new_image(data->mlx_pointer, data->window_width, data->window_height);
-	data->img.addr = mlx_get_data_addr(data->img.mlx_img, &data->img.bpp, &data->img.line_len, &data->img.endian);
+	// init minimap image
+	data->map_img.mlx_img = mlx_new_image(data->mlx_pointer, data->window_width, data->window_height);
+	data->map_img.addr = mlx_get_data_addr(data->map_img.mlx_img, &data->map_img.bpp, &data->map_img.line_len, &data->map_img.endian);
+
+	// init background image
+	data->background_img.mlx_img = mlx_new_image(data->mlx_pointer, WNDW_W, WNDW_H);
+	data->background_img.addr = mlx_get_data_addr(data->background_img.mlx_img, &data->background_img.bpp, &data->background_img.line_len, &data->background_img.endian);
+
+	// init game images
+	data->game_img.mlx_img = mlx_new_image(data->mlx_pointer, WNDW_W, WNDW_H);
+	data->game_img.addr = mlx_get_data_addr(data->game_img.mlx_img, &data->game_img.bpp, &data->game_img.line_len, &data->game_img.endian);
+
+
 }
+
+
 
 void	init_textures(t_mlx_data *data)
 {
 
 	size_t		i;
 	const char	*textures_path[] = {P_FLOOR, P_WALL, P_EP, P_SP, P_WP, P_NP, P_EXTRA};
+	const char	*floor_ceiling_txtre_path[] = {P_GRASS, P_SKY};
+
+	i = 0;
+	while (i < 2)
+	{
+		data->bckgr_txtr[i] = mlx_xpm_file_to_image(data->mlx_pointer,
+			(char *)floor_ceiling_txtre_path[i], &data->img_width, &data->img_height);
+		if (!data->bckgr_txtr[i])
+		{
+			printf("Error initializing the textures\n");
+			close_window(data);
+		}
+		i++;
+	}
 
 	i = 0;
 	while (i < 7)
@@ -135,6 +162,8 @@ void	init_player(t_player_data *player, t_mlx_data *data)
 
 	player->rotSpeed = 0;
 	player->moveSpeed = 0;
+
+	player->perpWallDist = 0;
 
 	player->kbrd.key_w = false;
 	player->kbrd.key_s = false;

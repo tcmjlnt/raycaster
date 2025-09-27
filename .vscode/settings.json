@@ -8,6 +8,8 @@
 		"string_view": "c",
 		"ranges": "c",
 		"span": "c",
-		"x.h": "c"
+		"x.h": "c",
+		"time.h": "c",
+		"raycaster.h": "c"
 	}
 }
