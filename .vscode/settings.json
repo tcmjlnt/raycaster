@@ -10,6 +10,7 @@
 		"span": "c",
 		"x.h": "c",
 		"time.h": "c",
-		"raycaster.h": "c"
+		"raycaster.h": "c",
+		"random": "c"
 	}
 }

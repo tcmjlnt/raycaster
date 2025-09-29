@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:10:50 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/27 19:00:57 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/29 18:03:00 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	destroy_images(t_mlx_data *data)
 {
 		mlx_destroy_image(data->mlx_pointer, data->map_img.mlx_img);
-		mlx_destroy_image(data->mlx_pointer, data->background_img.mlx_img);
+		// mlx_destroy_image(data->mlx_pointer, data->background_img.mlx_img);
 		mlx_destroy_image(data->mlx_pointer, data->game_img.mlx_img);
 
 }
@@ -47,3 +47,36 @@ int	close_window(t_mlx_data *data)
 // 	}
 // }
 
+void	clear_img(t_img *img, int width, int height)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < height)
+	{
+		j = 0;
+		while (j < width)
+		{
+			img_pix_put(img, j, i, 0x000000); // Black
+			j++;
+		}
+		i++;
+	}
+}
+
+void	clear_img_fast(t_img *img, int width, int height)
+{
+	(void) width;
+	int total_bytes = height * img->line_len;
+	memset(img->addr, 0, total_bytes);
+}
+
+void	clear_all_img_buffers(t_player_data *player)
+{
+	// clear_img_fast(&player->mlx_data_pointer->background_img, WNDW_W, WNDW_H);
+	clear_img_fast(&player->mlx_data_pointer->game_img, WNDW_W, WNDW_H);
+	clear_img_fast(&player->mlx_data_pointer->map_img,
+		player->mlx_data_pointer->window_width,
+		player->mlx_data_pointer->window_height);
+}

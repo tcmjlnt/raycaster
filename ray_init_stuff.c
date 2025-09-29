@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:01:42 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/27 19:01:39 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/29 19:00:55 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void	init_images(t_mlx_data *data)
 	data->map_img.mlx_img = mlx_new_image(data->mlx_pointer, data->window_width, data->window_height);
 	data->map_img.addr = mlx_get_data_addr(data->map_img.mlx_img, &data->map_img.bpp, &data->map_img.line_len, &data->map_img.endian);
 
-	// init background image
-	data->background_img.mlx_img = mlx_new_image(data->mlx_pointer, WNDW_W, WNDW_H);
-	data->background_img.addr = mlx_get_data_addr(data->background_img.mlx_img, &data->background_img.bpp, &data->background_img.line_len, &data->background_img.endian);
+	// // init background image
+	// data->background_img.mlx_img = mlx_new_image(data->mlx_pointer, WNDW_W, WNDW_H);
+	// data->background_img.addr = mlx_get_data_addr(data->background_img.mlx_img, &data->background_img.bpp, &data->background_img.line_len, &data->background_img.endian);
 
 	// init game images
 	data->game_img.mlx_img = mlx_new_image(data->mlx_pointer, WNDW_W, WNDW_H);
@@ -74,13 +74,13 @@ void	init_textures(t_mlx_data *data)
 static void	init_map(t_map *map)
 {
 	char temp_map[8][8] = {
-		{'1','1','1','1','1','1','1','1'},
+		{'1','1','1','1','1','1','1','0'},
 		{'1','0','1','0','0','0','0','1'},
 		{'1','0','1','0','1','1','1','1'},
 		{'1','0','1','0','W','0','0','1'},
 		{'1','0','0','0','0','0','0','1'},
-		{'1','1','0','C','0','1','0','1'},
-		{'1','0','0','0','0','0','0','1'},
+		{'1','1','0','C','0','0','1','1'},
+		{'1','0','0','0','0','1','0','1'},
 		{'1','1','1','1','1','1','1','1'}
 	};
 
@@ -172,6 +172,12 @@ void	init_player(t_player_data *player, t_mlx_data *data)
 	player->kbrd.key_left = false;
 	player->kbrd.key_right = false;
 	player->kbrd.key_m = true;
+
+	player->w_side.east = false;
+	player->w_side.west = false;
+	player->w_side.north = false;
+	player->w_side.south = false;
+
 
 
 }

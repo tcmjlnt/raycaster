@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:13:25 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/27 19:04:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/29 20:12:06 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,31 +106,73 @@ void	render_2Dray(t_mlx_data *data, t_player_data *player) // a expliciter
 		wallHitX * TILE_SIZE, wallHitY * TILE_SIZE);
 }
 
-// void	render_cubes(t_mlx_data *data, t_player_data *player)
-// {
+void	verLine(t_mlx_data *data, int x, int drawStart, int drawEnd, int color)
+{
+	int	y = 0;
 
-// 	int	lineHeight = (int)(WNDW_H / player->perpWallDist);
+	while (y < drawStart)
+	{
+		img_pix_put(&data->game_img, x, y, RGB_SKY);
+		y++;
+	}
+	y = drawEnd;
+	while (y < WNDW_H)
+	{
+		img_pix_put(&data->game_img, x, y, RGB_FLR);
+		y++;
+	}
+	while (drawStart < drawEnd)
+	{
+		img_pix_put(&data->game_img, x, drawStart, color);
+		drawStart++;
+	}
 
-// 	int	drawStart = -lineHeight / 2 + WNDW_H / 2;
-// 	if (drawStart < 0)
-// 		drawStart = 0;
-// 	int drawEnd = lineHeight / 2 + WNDW_H / 2;
-// 	if (drawEnd >= WNDW_H)
-// 		drawEnd = WNDW_H - 1;
+}
+
+
+void	render_cubes(t_mlx_data *data, t_player_data *player, int x)
+{
+
+	int color = RGB_RED;
+	int	lineHeight = (int)(WNDW_H / player->perpWallDist);
+
+	int	drawStart = -lineHeight / 2 + WNDW_H / 2;
+	if (drawStart < 0)
+		drawStart = 0;
+	int drawEnd = lineHeight / 2 + WNDW_H / 2;
+	if (drawEnd >= WNDW_H)
+		drawEnd = WNDW_H - 1;
+
+	if (player->side) // le mur est un cote (est-ouest)
+	{
+		if (player->stepY == 1) // WEST facing wall -- on regarde a l'est
+			color = RGB_BLUE;
+		else
+			color = RGB_RED; // EAST facing wall -- on regarde a l'ouest
+	}
+	else // le mur n'est pas un cote (est-ouest)
+	{
+		if (player->stepX == 1) // NORTH facing wall -- on regarde au sud
+			color = RGB_GRN;
+		else
+			color = RGB_YLW; // SOUTH facing wall -- on regarde au nord
+	}
+	verLine(data, x, drawStart, drawEnd, color);
 
 
 
 
 
 
-// }
+
+}
 
 
 void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 {
 
 	// int	w = data->map.cols;
-	int	w = data->window_width;
+	int	w = WNDW_W;
 
 	for (int x = 0; x < w; x++)
 	{
@@ -196,24 +238,34 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 				player->sideDistX += player->deltaDistX;
 				player->mapX += player->stepX;
 				player->side = 0;
+				if (player->stepX > 0)
+					player->w_side.south = true;
+				else
+					player->w_side.north = true;
 			}
 			else
 			{
 				player->sideDistY += player->deltaDistY;
 				player->mapY += player->stepY;
 				player->side = 1;
+				if (player->stepY > 0)
+					player->w_side.west = true;
+				else
+					player->w_side.east = true;
 			}
 			if (data->map.grid[player->mapY][player->mapX] == '1')
 				player->hit = 1;
 		}
 		if (player->kbrd.key_m == true)
+		{
 			render_2Dray(player->mlx_data_pointer, player);
+		}
 
 		if (player->side == 0)
 			player->perpWallDist = player->sideDistX - player->deltaDistX;
 		else
 			player->perpWallDist = player->sideDistY - player->deltaDistY;
-		// render_cubes(player->mlx_data_pointer, player);
+		render_cubes(player->mlx_data_pointer, player, x);
 
 
 	}
@@ -239,16 +291,16 @@ void	render_map(t_mlx_data *data, t_player_data *player)
 	// raycasting_loop(data, player);
 }
 
-void	render_background(t_mlx_data *data, t_player_data *player)
-{
-	(void) player;
-	render_rect(&data->background_img, (t_rect){0, 0, WNDW_W, (WNDW_H / 2), RGB_CLG});
-	render_rect(&data->background_img, (t_rect){0, WNDW_H / 2, WNDW_W, (WNDW_H / 2), RGB_FLR});
+// void	render_background(t_mlx_data *data, t_player_data *player)
+// {
+// 	(void) player;
+// 	render_rect(&data->background_img, (t_rect){0, 0, WNDW_W, (WNDW_H / 2), RGB_SKY});
+// 	render_rect(&data->background_img, (t_rect){0, WNDW_H / 2, WNDW_W, (WNDW_H / 2), RGB_FLR});
 
 
 
 
-}
+// }
 
 // void	render_background(t_img *background_img, int color)
 // {
@@ -288,7 +340,9 @@ int	render_loop(t_player_data *player)
 
 	handle_move(player);
 	// clear_image(player->mlx_data_pointer);
-	mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
+
+	// clear_all_img_buffers(player);
+
 
 	// for (y = 0; y < 8; y++)
 	// {
@@ -299,22 +353,26 @@ int	render_loop(t_player_data *player)
 	// }
 
 	// render_background(player->mlx_data_pointer, player);
-	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
-	// 		player->mlx_data_pointer->background_img.mlx_img, 0, 0);
-	mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
-		player->mlx_data_pointer->bckgr_txtr[1], 0, 0);
-	mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
-		player->mlx_data_pointer->bckgr_txtr[0], 0, WNDW_H / 2);
 
-	if (player->kbrd.key_m == true)
-		render_map(player->mlx_data_pointer, player);
+	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+	// 	player->mlx_data_pointer->bckgr_txtr[1], 0, 0);
+	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+	// 	player->mlx_data_pointer->bckgr_txtr[0], 0, WNDW_H / 2);
+
+	// if (player->kbrd.key_m == true)
+	render_map(player->mlx_data_pointer, player);
 
 	raycasting_loop(player->mlx_data_pointer, player);
 
 
 
+	// mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
 
 
+	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+	// 	player->mlx_data_pointer->background_img.mlx_img, 0, 0);
+	mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
+			player->mlx_data_pointer->game_img.mlx_img, 0, 0);
 	if (player->kbrd.key_m == true)
 		{mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
 			player->mlx_data_pointer->map_img.mlx_img, 10, 10);}

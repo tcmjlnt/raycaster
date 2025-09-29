@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:11:46 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/27 15:51:39 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/29 18:16:55 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ int	key_release_hook(int keysym, t_player_data *player)
 		{
 			player->kbrd.key_m = false;
 			printf("player->kbrd.key_m = %d \n", player->kbrd.key_m);
-			mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
+			// mlx_clear_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window);
 		}
 		// toggle_minimap(player->mlx_data_pointer, player);
 	}

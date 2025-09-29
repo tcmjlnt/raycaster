@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:10:58 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/27 18:56:30 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/29 19:18:14 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <sys/time.h>
 # include <X11/X.h>
 # include <X11/keysym.h>
+# include <string.h>
 
 # define TILE_SIZE 64
 # define PLAYER_SIZE 8
@@ -36,8 +37,9 @@
 # define RGB_BLUE 0x4285f4
 # define RGB_YLW 0xf4b400
 # define RGB_GRN 0x0f9d58
-# define RGB_FLR 0x7A8B92
-# define RGB_CLG 0x927A8B
+# define RGB_SKY 0x8786C0
+// # define RGB_FLR 0x927A8B
+# define RGB_FLR 0xC08786
 
 # define P_FLOOR "textures/green_texture.xpm"
 # define P_WALL "textures/red_texture.xpm"
@@ -107,7 +109,7 @@ typedef struct s_mlx_data
 
 
 	t_img		map_img;
-	t_img		background_img;
+	// t_img		background_img;
 	t_img		game_img;
 
 	// void		*ray_image; 		// en gros ce bloc a ete bouge dans t_img
@@ -119,7 +121,13 @@ typedef struct s_mlx_data
 	// t_elements	*elts;
 }			t_mlx_data;
 
-
+typedef struct s_wall
+{
+	bool		west;
+	bool		east;
+	bool		north;
+	bool		south;
+}				t_wall;
 
 
 typedef struct s_player_data
@@ -153,6 +161,8 @@ typedef struct s_player_data
 
 	double		moveSpeed;
 	double		rotSpeed;
+
+	t_wall		w_side;
 
 	t_key_inpt	kbrd;
 
@@ -190,6 +200,12 @@ void		init_images(t_mlx_data *data);
 // mlx_stuff
 int			close_window(t_mlx_data *data);
 // void		clear_ray_image(t_mlx_data *data);
+void		clear_img(t_img *img, int width, int height);
+void		clear_img_fast(t_img *img, int width, int height);
+void		clear_all_img_buffers(t_player_data *player);
+
+
+
 
 
 // render_stuff
