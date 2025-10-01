@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:10:58 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/29 19:18:14 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/30 22:02:39 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@
 # define P_EXTRA "textures/blue_texture.xpm"
 # define P_GRASS "textures/floor_texture.xpm"
 # define P_SKY "textures/sky_texture.xpm"
+
+# define FOV 66
 
 
 typedef enum	e_tile
@@ -129,9 +131,16 @@ typedef struct s_wall
 	bool		south;
 }				t_wall;
 
+typedef struct s_coord
+{
+	double	x;
+	double	y;
+}				t_coord;
+
 
 typedef struct s_player_data
 {
+	//t_coord		pos;
 	double		posX;
 	double		posY;
 	double		dirX;
@@ -161,6 +170,9 @@ typedef struct s_player_data
 
 	double		moveSpeed;
 	double		rotSpeed;
+
+	bool		print_debug;	// debug
+	bool		game_init;		// debug
 
 	t_wall		w_side;
 
@@ -192,7 +204,7 @@ typedef struct s_rect
 // init_stuff
 void		init_textures(t_mlx_data *data);
 void		init_data(t_mlx_data *data);
-void		init_player(t_player_data *player, t_mlx_data *data);
+int			init_player(t_player_data *player, t_mlx_data *data);
 void		init_images(t_mlx_data *data);
 
 
@@ -218,6 +230,10 @@ void		toggle_minimap(t_mlx_data *data, t_player_data *player);
 int			key_press_hook(int keysym, t_player_data *data);
 int			key_release_hook(int keysym, t_player_data *player);
 void		handle_move(t_player_data *player);
+void		print_ray_info(t_player_data *player, int x, FILE *fp);
+void		print_updated_pos(t_player_data *player);
+
+
 
 
 

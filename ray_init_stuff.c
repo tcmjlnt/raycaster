@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:01:42 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/29 19:00:55 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/01 20:13:40 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ void	init_textures(t_mlx_data *data)
 static void	init_map(t_map *map)
 {
 	char temp_map[8][8] = {
-		{'1','1','1','1','1','1','1','0'},
-		{'1','0','1','0','0','0','0','1'},
-		{'1','0','1','0','1','1','1','1'},
+		{'1','1','1','1','1','0','0','0'},
+		{'1','0','1','0','1','0','0','0'},
+		{'1','0','1','0','0','1','1','1'},
 		{'1','0','1','0','W','0','0','1'},
 		{'1','0','0','0','0','0','0','1'},
 		{'1','1','0','C','0','0','1','1'},
@@ -105,55 +105,63 @@ void	init_data(t_mlx_data *data)
 	data->display_map = true;
 }
 
-// void	player_dir(t_player_data *player)
-// {
-// 	if (player->facing == 'E')
-// 	{
-// 		player->dirX = 1;
-// 		player->dirY = 0;
-// 		player->planeX = 0;
-// 		player->planeY = 0.66;
-// 	}
-// 		if (player->facing == 'W')
-// 	{
-// 		player->dirX = -1;
-// 		player->dirY = 0;
-// 		player->planeX = 0;
-// 		player->planeY = 0.66;
-// 	}
-// 		if (player->facing == 'N')
-// 	{
-// 		player->dirX = 0;
-// 		player->dirY = -1;
-// 		player->planeX = 0.66;
-// 		player->planeY = 0;
-// 	}
-// 		if (player->facing == 'S')
-// 	{
-// 		player->dirX = 0;
-// 		player->dirY = 1;
-// 		player->planeX = 0.66;
-// 		player->planeY = 0;
-// 	}
-// }
-
-void	init_player(t_player_data *player, t_mlx_data *data)
+void	which_starting_direction(t_player_data *player, char facing)
 {
+	if (facing == 'W')
+	{
+		player->dirX = -1;
+		player->dirY = 0;
+		player->planeX = 0;
+		player->planeY = -0.66;
+	}
+	if (facing == 'E')
+	{
+		player->dirX = 1;
+		player->dirY = 0;
+		player->planeX = 0;
+		player->planeY = 0.66;
+	}
+
+	if (facing == 'N')
+	{
+		player->dirX = 0;
+		player->dirY = -1;
+		player->planeX = 0.66;
+		player->planeY = 0;
+	}
+
+	if (facing == 'S')
+	{
+		player->dirX = 0;
+		player->dirY = 1;
+		player->planeX = -0.66;
+		player->planeY = 0;
+	}
+}
+
+int	init_player(t_player_data *player, t_mlx_data *data)
+{
+	int	init_pos = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++)
 		{
 			if (data->map.grid[i][j] == 'E' || data->map.grid[i][j] == 'W'
 				|| data->map.grid[i][j] == 'S' || data->map.grid[i][j] == 'N')
 			{
+				if (init_pos != 0)
+					return (printf("Multiple starting position\n"), 0);
 				player->posX = j + 0.5;
 				player->posY = i + 0.5;
+				which_starting_direction(player, data->map.grid[i][j]);
+				init_pos++;
+
 			}
 		}
 	}
-	player->dirX = -1;
-	player->dirY = 0;
-	player->planeX = 0;
-	player->planeY = 0.66;
+	// player->dirX = -1;
+	// player->dirY = 0;
+	// player->planeX = 0;
+	// player->planeY = 0.66;
 	player->start_time = date_in_ms();
 	player->time = 0;
 	player->old_time = 0;
@@ -177,6 +185,13 @@ void	init_player(t_player_data *player, t_mlx_data *data)
 	player->w_side.west = false;
 	player->w_side.north = false;
 	player->w_side.south = false;
+
+	player->side = 0;
+
+	player->print_debug = true;
+	player->game_init = true;
+
+	return (1);
 
 
 

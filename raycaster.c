@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:11:46 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/29 18:16:55 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/09/30 22:01:29 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ int	key_press_hook(int keysym, t_player_data *player)
 	// 	}
 	// 	// toggle_minimap(player->mlx_data_pointer, player);
 	// }
-	if (keysym == XK_w)
+	if (keysym == XK_w) // keycode ==
 		player->kbrd.key_w = true;
 	if (keysym == XK_s)
 		player->kbrd.key_s = true;
@@ -205,7 +205,8 @@ int	main(void)
 	t_player_data	player;
 
 	init_data(&data);
-	init_player(&player, &data);
+	if (!init_player(&player, &data))
+		return (1);
 	print_map(&(data.map));
 	if (!render(&data, &player))
 		return (1);

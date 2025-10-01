@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:13:25 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/29 20:12:06 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/01 20:11:51 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,12 @@
 // 			data->textures[tile_type], x * TILE_SIZE, y * TILE_SIZE);
 // }
 
-
+// void convert_to_screen_coords(double math_x, double math_y, int *screen_x, int *screen_y)
+// {
+// 	*screen_x = (int)(math_x * TILE_SIZE);
+// 	// Flip Y coordinate for screen display (mathematical Y=0 is at bottom, screen Y=0 is at top)
+// 	*screen_y = (int)((math_y) * TILE_SIZE); // Assuming 8x8 map
+// }
 
 
 void draw_ray_line(t_mlx_data *data, int x0, int y0, int x1, int y1) // a expliciter
@@ -53,12 +58,9 @@ void draw_ray_line(t_mlx_data *data, int x0, int y0, int x1, int y1) // a explic
 	while (1)
 	{
 		if (x >= 0 && x <= data->window_width && y>= 0 && y<= data->window_height)
-		{
-			int offset = (y * data->map_img.line_len) + (x * (data->map_img.bpp / 8));
-			// Yellow color (0xFFFF00) in the image buffer
-			*(unsigned int*)(data->map_img.addr + offset) = 0xFFFF00;		}
-		// if (data->mlx_window)
-		// 	mlx_pixel_put(data->mlx_pointer, data->mlx_window, x, y, 0xFFFF00);
+			img_pix_put(&data->map_img, x, y, 0xFFFF00);
+		// if (x >= 0 && x <= WNDW_W && y>= 0 && y<= WNDW_H)
+		// 	img_pix_put(&data->game_img, x, y, 0xFFFF00);
 
 
 		if (x == x1 && y == y1) break;
@@ -100,11 +102,25 @@ void	render_2Dray(t_mlx_data *data, t_player_data *player) // a expliciter
 		wallHitX = player->posX + (wallHitY - player->posY) * player->rayDirX / player->rayDirY;
 	}
 
+	// if (player->print_debug)
+	// {
+	// 	print_ray_info(player, x, fp);
+	// 	fprintf(fp, "		Ray[%d]->startX =		%.4f		startY =		%.4f\n", x, startX, startY);
+	// 	fprintf(fp, "		Ray[%d]->wallHitX =		%.4f		wallHitY =		%.4f\n\n", x, wallHitX, wallHitY);
+
+	// }
+	// int start_screen_x, start_screen_y, end_screen_x, end_screen_y;
+	// convert_to_screen_coords(startX, startY, &start_screen_x, &start_screen_y);
+	// convert_to_screen_coords(wallHitX, wallHitY, &end_screen_x, &end_screen_y);
+
 	// Draw the ray to the exact wall hit position
 	draw_ray_line(data,
 		startX * TILE_SIZE, startY * TILE_SIZE,
 		wallHitX * TILE_SIZE, wallHitY * TILE_SIZE);
+	// draw_ray_line(data, start_screen_x, start_screen_y, end_screen_x, end_screen_y);
+
 }
+
 
 void	verLine(t_mlx_data *data, int x, int drawStart, int drawEnd, int color)
 {
@@ -168,11 +184,48 @@ void	render_cubes(t_mlx_data *data, t_player_data *player, int x)
 }
 
 
+void	render_map(t_mlx_data *data, t_player_data *player)
+{
+	(void) player;
+	int x, y;
+
+	for (y = 0; y < 8; y++)
+	{
+		for (x = 0; x < 8; x++)
+		{
+			int screen_x = x * TILE_SIZE;
+			int screen_y = y * TILE_SIZE;
+			if (char_to_tile(data->map.grid[y][x]) == E_WALL)
+				render_sqr(&data->map_img, (t_sqr){screen_x, screen_y,  TILE_SIZE, RGB_RED});
+
+			else
+				render_sqr(&data->map_img, (t_sqr){screen_x, screen_y,  TILE_SIZE, 0x000000});			// render_tile(data, char_to_tile(data->map.grid[y][x]), x, y);
+		}
+	}
+
+	// raycasting_loop(data, player);
+}
+
+
 void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 {
 
 	// int	w = data->map.cols;
 	int	w = WNDW_W;
+	// int w = 16;
+	// FILE	*fp;
+	// int dda = 0;
+
+	// if (player->print_debug)
+	// {
+	// 	fp = fopen("output.txt", "w");
+	// 	if (fp == NULL)
+	// 	{
+	// 		perror("fopen");
+	// 		close_window(player->mlx_data_pointer);
+	// 	}
+	// }
+
 
 	for (int x = 0; x < w; x++)
 	{
@@ -199,8 +252,9 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 			player->deltaDistY = 1e30;
 		else
 			player->deltaDistY = fabs(1 / player->rayDirY);
-		// printf("player->deltaDistX = %f\n", player->deltaDistX);
-		// printf("player->deltaDistY = %f\n", player->deltaDistY);
+		// if (player->print_debug)
+		// {	printf("player->deltaDistX = %f\n", player->deltaDistX);
+		// 	printf("player->deltaDistY = %f\n", player->deltaDistY);}
 
 		player->hit = 0;
 
@@ -225,11 +279,15 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 			player->stepY = 1;
 			player->sideDistY = (player->mapY + 1.0 - player->posY) * player->deltaDistY;
 		}
-		// printf("player->sideDistX = %f\n", player->sideDistX);
-		// printf("player->sideDistY = %f\n", player->sideDistY);
+		// if (player->print_debug)
+		// {
+		// 	printf("player->sideDistX = %f\n", player->sideDistX);
+		// 	printf("player->sideDistY = %f\n", player->sideDistY);
+		// }
 
 
 		// DDA - Digital Differential Analyzer
+		// dda = 0;	// pour les prints de debug
 		while (player->hit == 0)
 		{
 			//jump to next map sqr, either in x-direction, or in y-direction
@@ -238,58 +296,57 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 				player->sideDistX += player->deltaDistX;
 				player->mapX += player->stepX;
 				player->side = 0;
-				if (player->stepX > 0)
-					player->w_side.south = true;
-				else
-					player->w_side.north = true;
 			}
 			else
 			{
 				player->sideDistY += player->deltaDistY;
 				player->mapY += player->stepY;
 				player->side = 1;
-				if (player->stepY > 0)
-					player->w_side.west = true;
-				else
-					player->w_side.east = true;
 			}
+			// if (player->print_debug)
+			// {
+			// 	fprintf(fp, "			Ray[%d] DDA[%d]		sideDistX = %.4f		sideDistY = %.4f\n", x, dda, player->sideDistX, player->sideDistY);
+			// 	dda++;
+			// }
 			if (data->map.grid[player->mapY][player->mapX] == '1')
 				player->hit = 1;
 		}
-		if (player->kbrd.key_m == true)
-		{
-			render_2Dray(player->mlx_data_pointer, player);
-		}
-
 		if (player->side == 0)
 			player->perpWallDist = player->sideDistX - player->deltaDistX;
 		else
 			player->perpWallDist = player->sideDistY - player->deltaDistY;
+
+
+		if (player->kbrd.key_m == true)
+		{
+			// if (player->print_debug)
+			// 	print_ray_info(player, x, fp);
+			// render_minimap_background(data);
+
+			// render_map(player->mlx_data_pointer, player);
+			render_2Dray(player->mlx_data_pointer, player);
+		}
+
 		render_cubes(player->mlx_data_pointer, player, x);
 
 
+		// if (player->kbrd.key_m == true)
+		// {
+		// 	// if (player->print_debug)
+		// 	// 	print_ray_info(player, x, fp);
+		// 	// render_minimap_background(data);
+
+		// 	// render_map(player->mlx_data_pointer, player);
+		// 	render_2Dray(player->mlx_data_pointer, player);
+		// }
+
 	}
+	// if (player->print_debug)
+	// 	fclose(fp);
+	player->print_debug = false;
+
 }
 
-void	render_map(t_mlx_data *data, t_player_data *player)
-{
-	(void) player;
-	int x, y;
-
-	for (y = 0; y < 8; y++)
-	{
-		for (x = 0; x < 8; x++)
-		{
-			if (char_to_tile(data->map.grid[y][x]) == E_WALL)
-				render_sqr(&data->map_img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, RGB_RED});
-
-			else
-				render_sqr(&data->map_img, (t_sqr){TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, 0x000000});			// render_tile(data, char_to_tile(data->map.grid[y][x]), x, y);
-		}
-	}
-
-	// raycasting_loop(data, player);
-}
 
 // void	render_background(t_mlx_data *data, t_player_data *player)
 // {
@@ -338,6 +395,8 @@ int	render_loop(t_player_data *player)
 	player->moveSpeed = player->frameTime * 5.0;
 	player->rotSpeed  = player->frameTime * 3.0;
 
+	if (player->game_init)
+		print_updated_pos(player);
 	handle_move(player);
 	// clear_image(player->mlx_data_pointer);
 
@@ -359,10 +418,14 @@ int	render_loop(t_player_data *player)
 	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
 	// 	player->mlx_data_pointer->bckgr_txtr[0], 0, WNDW_H / 2);
 
-	// if (player->kbrd.key_m == true)
-	render_map(player->mlx_data_pointer, player);
+	if (player->kbrd.key_m == true)
+		render_map(player->mlx_data_pointer, player);
+
 
 	raycasting_loop(player->mlx_data_pointer, player);
+
+	// if (player->kbrd.key_m == true)
+	// 	render_map(player->mlx_data_pointer, player);
 
 
 
@@ -375,7 +438,7 @@ int	render_loop(t_player_data *player)
 			player->mlx_data_pointer->game_img.mlx_img, 0, 0);
 	if (player->kbrd.key_m == true)
 		{mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
-			player->mlx_data_pointer->map_img.mlx_img, 10, 10);}
+			player->mlx_data_pointer->map_img.mlx_img, 0, 0);}
 
 
 	// mlx_put_image_to_window(player->mlx_data_pointer->mlx_pointer, player->mlx_data_pointer->mlx_window,
@@ -391,9 +454,10 @@ bool	render(t_mlx_data *data, t_player_data *player)
 	if (!data->mlx_pointer)
 		return (printf("MLX initialization failed\n"), false);
 
-
 	data->mlx_window = mlx_new_window(data->mlx_pointer, WNDW_W,
 			WNDW_H, "raycaster");
+	// data->mlx_window = mlx_new_window(data->mlx_pointer, WNDW_W,
+	// 		WNDW_H, "raycaster");
 	if (!data->mlx_window)
 	{
 		mlx_destroy_display(data->mlx_pointer);
