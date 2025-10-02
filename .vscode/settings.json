@@ -12,5 +12,6 @@
 		"time.h": "c",
 		"raycaster.h": "c",
 		"random": "c"
-	}
+	},
+	"window.zoomLevel": -1
 }

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:13:25 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/10/01 20:11:51 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/02 16:10:10 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,10 @@ void draw_ray_line(t_mlx_data *data, int x0, int y0, int x1, int y1) // a explic
 	}
 }
 
-void	render_2Dray(t_mlx_data *data, t_player_data *player) // a expliciter
+void	render_2Dray(t_mlx_data *data, t_player_data *player, int x, FILE *fp) // a expliciter
 {
+	(void) fp;
+	(void) x;
 	// Calculate the exact wall hit position
 	double wallHitX, wallHitY;
 	// Store the starting position for ray drawing
@@ -107,7 +109,6 @@ void	render_2Dray(t_mlx_data *data, t_player_data *player) // a expliciter
 	// 	print_ray_info(player, x, fp);
 	// 	fprintf(fp, "		Ray[%d]->startX =		%.4f		startY =		%.4f\n", x, startX, startY);
 	// 	fprintf(fp, "		Ray[%d]->wallHitX =		%.4f		wallHitY =		%.4f\n\n", x, wallHitX, wallHitY);
-
 	// }
 	// int start_screen_x, start_screen_y, end_screen_x, end_screen_y;
 	// convert_to_screen_coords(startX, startY, &start_screen_x, &start_screen_y);
@@ -213,18 +214,23 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 	// int	w = data->map.cols;
 	int	w = WNDW_W;
 	// int w = 16;
-	// FILE	*fp;
+	FILE	*fp;
 	// int dda = 0;
-
 	// if (player->print_debug)
 	// {
-	// 	fp = fopen("output.txt", "w");
-	// 	if (fp == NULL)
-	// 	{
-	// 		perror("fopen");
-	// 		close_window(player->mlx_data_pointer);
-	// 	}
+	// 	print_ray_info(player, x, fp);
+	// 	fprintf(fp, "		Ray[%d]->startX =		%.4f		startY =		%.4f\n", x, startX, startY);
+	// 	fprintf(fp, "		Ray[%d]->wallHitX =		%.4f		wallHitY =		%.4f\n\n", x, wallHitX, wallHitY);
 	// }
+	if (player->print_debug)
+	{
+		fp = fopen("output.txt", "w");
+		if (fp == NULL)
+		{
+			perror("fopen");
+			close_window(player->mlx_data_pointer);
+		}
+	}
 
 
 	for (int x = 0; x < w; x++)
@@ -324,7 +330,7 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 			// render_minimap_background(data);
 
 			// render_map(player->mlx_data_pointer, player);
-			render_2Dray(player->mlx_data_pointer, player);
+			render_2Dray(player->mlx_data_pointer, player, x, fp);
 		}
 
 		render_cubes(player->mlx_data_pointer, player, x);
@@ -341,8 +347,8 @@ void	raycasting_loop(t_mlx_data *data, t_player_data *player)
 		// }
 
 	}
-	// if (player->print_debug)
-	// 	fclose(fp);
+	if (player->print_debug)
+		fclose(fp);
 	player->print_debug = false;
 
 }
@@ -473,7 +479,7 @@ bool	render(t_mlx_data *data, t_player_data *player)
 	mlx_loop_hook(data->mlx_pointer, render_loop, player);
 	mlx_hook(data->mlx_window, KeyPress, KeyPressMask, key_press_hook, player);
 	mlx_hook(data->mlx_window, KeyRelease, KeyReleaseMask, key_release_hook, player);
-	mlx_hook(data->mlx_window, 17, 0, close_window, data);
+	mlx_hook(data->mlx_window, DestroyNotify, NoEventMask, close_window, data);
 	// mlx_key_hook(data->mlx_window, key_hook, player);
 	mlx_loop(data->mlx_pointer);
 
