@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:11:46 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/30 22:01:29 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:42:07 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,5 +210,6 @@ int	main(void)
 	print_map(&(data.map));
 	if (!render(&data, &player))
 		return (1);
+	printf ("on sort proprement du programme\n");
 	return (0);
 }

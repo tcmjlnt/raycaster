@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:10:58 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/09/30 22:02:39 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:39:48 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,8 @@ int			close_window(t_mlx_data *data);
 void		clear_img(t_img *img, int width, int height);
 void		clear_img_fast(t_img *img, int width, int height);
 void		clear_all_img_buffers(t_player_data *player);
+void		cleanup_mlx(t_mlx_data *data);
+
 
 
 
@@ -225,8 +227,8 @@ void		render_map(t_mlx_data *data, t_player_data *player);
 bool		render(t_mlx_data *data, t_player_data *player);
 
 // game_stuff
-int			key_hook(int keycode, t_player_data *player);
-void		toggle_minimap(t_mlx_data *data, t_player_data *player);
+// int			key_hook(int keycode, t_player_data *player);
+// void		toggle_minimap(t_mlx_data *data, t_player_data *player);
 int			key_press_hook(int keysym, t_player_data *data);
 int			key_release_hook(int keysym, t_player_data *player);
 void		handle_move(t_player_data *player);

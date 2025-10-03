@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 15:13:25 by tjacquel          #+#    #+#             */
-/*   Updated: 2025/10/02 16:10:10 by tjacquel         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:40:46 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -482,6 +482,9 @@ bool	render(t_mlx_data *data, t_player_data *player)
 	mlx_hook(data->mlx_window, DestroyNotify, NoEventMask, close_window, data);
 	// mlx_key_hook(data->mlx_window, key_hook, player);
 	mlx_loop(data->mlx_pointer);
+
+	cleanup_mlx(data);
+
 
 	return (true);
 }
